@@ -1,0 +1,107 @@
+     1                                  ; This program will allow a user to input float numbers in an array A and array B, print the magnitude, and be able to unionize them.
+     2                                  ; Copyright (C) 2023 Shadi Hirbawi.                                                                           *
+     3                                  ;                                                                                                                           *
+     4                                  ;This file is part of the software program "Add arrays".
+     5                                  ;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License   *
+     6                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     7                                  ;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied          *
+     8                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+     9                                  ;A copy of the GNU General Public License v3 is available here:  <https:;www.gnu.org/licenses/>.                            *
+    10                                  ;****************************************************************************************************************************
+    11                                  ;========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3**
+    12                                  ;
+    13                                  ;Author information
+    14                                  ;  Author name: Shadi Hirbawi
+    15                                  ;  Author email: hirbawishadi@csu.fullerton.edu
+    16                                  ;
+    17                                  ;Program information
+    18                                  ;  Program name: Homework 3
+    19                                  ;  Programming languages: Assembly, C, bash, C++
+    20                                  ;  Date program began: 2023 March 13
+    21                                  ;  Date of last update: 2023 March 13
+    22                                  ;  Date of reorganization of comments: 2023 March 13
+    23                                  ;  Files in this program: quick.c, executive.asm, fill_random_array.asm, main.cpp, r.sh, show_array.asm
+    24                                  ;  Status: Finished.  
+    25                                  ;
+    26                                  ;This file
+    27                                  ;   File name: fill_random_array.asm
+    28                                  ;   Language: X86 with Intel syntax.
+    29                                  ;   Max page width: 132 columns
+    30                                  ;  Assemble: nasm -f elf64 -l fill_random_array.lis -o fill_random_array.o fill_random_array.asm
+    31                                  ;   Link: g++ -m64 -std=c++17 -fno-pie -no-pie -o rand_array.out executive.o fill_random_array.o show_array.o main.o quick.o
+    32                                  ;   Purpose: fill a random array with a maximum size of 100 and a given length
+    33                                  ;========================================================================================================
+    34                                  global fill_random_array
+    35                                  ;can be called using extern fill_random_array
+    36                                  
+    37                                  segment .data
+    38                                  ;Empty
+    39                                  segment .bss
+    40                                  ;Empty
+    41                                  segment .text
+    42                                  fill_random_array:
+    43                                  ;---------------------
+    44 00000000 55                      push rbp
+    45 00000001 4889E5                  mov  rbp,rsp
+    46 00000004 57                      push rdi                                                    
+    47 00000005 56                      push rsi                                                    
+    48 00000006 52                      push rdx                                                    
+    49 00000007 51                      push rcx                                                    
+    50 00000008 4150                    push r8                                                     
+    51 0000000A 4151                    push r9                                                     
+    52 0000000C 4152                    push r10                                                    
+    53 0000000E 4153                    push r11                                                    
+    54 00000010 4154                    push r12                                                  
+    55 00000012 4155                    push r13                                                    
+    56 00000014 4156                    push r14                                                    
+    57 00000016 4157                    push r15                                                    
+    58 00000018 53                      push rbx                                                    
+    59 00000019 9C                      pushf                                                      
+    60                                  ;----------------------
+    61 0000001A 6A00                    push qword 0
+    62                                  
+    63 0000001C 4989FE                  mov r14,rdi ;array
+    64 0000001F 4989F5                  mov r13,rsi ;size
+    65 00000022 41BC00000000            mov r12,0   ;index
+    66                                  
+    67                                  beginLoop:
+    68 00000028 4D39EC                      cmp r12,r13 ;compare the index and size
+    69 0000002B 7426                        je done ;if r12 >r13, exit
+    70 0000002D 490FC7F3                    rdrand r11 ;generate random number
+    71                                  ;-------------ISNAN----------
+    72 00000031 4C89DB                      mov rbx,r11
+    73 00000034 48C1EB34                    shr rbx, 52
+    74 00000038 4881FBFF070000              cmp rbx, 0x7FF
+    75 0000003F 74E7                        je beginLoop
+    76 00000041 4881FBFF0F0000              cmp rbx, 0xFFF
+    77 00000048 74DE                        je beginLoop
+    78                                  ;------------------------------
+    79                                  
+    80 0000004A 4F891CE6                    mov [r14 + 8*r12], r11  ;move the value to the appropriate address
+    81                                  
+    82 0000004E 49FFC4                      inc r12   ;inc index by 1
+    83 00000051 EBD5                        jmp beginLoop    ;loop over
+    84                                  done:
+    85                                  
+    86                                  
+    87 00000053 58                      pop rax
+    88                                  ;---------------------
+    89 00000054 9D                      popf                                                        
+    90 00000055 5B                      pop rbx                                                    
+    91 00000056 415F                    pop r15                                                   
+    92 00000058 415E                    pop r14                                                   
+    93 0000005A 415D                    pop r13                                                     
+    94 0000005C 415C                    pop r12                                                     
+    95 0000005E 415B                    pop r11                                                     
+    96 00000060 415A                    pop r10                                                     
+    97 00000062 4159                    pop r9                                                      
+    98 00000064 4158                    pop r8                                                      
+    99 00000066 59                      pop rcx                                                     
+   100 00000067 5A                      pop rdx                                                    
+   101 00000068 5E                      pop rsi                                                     
+   102 00000069 5F                      pop rdi                                                     
+   103 0000006A 5D                      pop rbp                                                     
+   104                                  
+   105                                  
+   106 0000006B C3                      ret 
+   107                                  
